@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trello Offline</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css?v=2">
+</head>
+
+<body>
+    <header class="app-header">
+        <div class="header-logo">
+            <h1>trello@offline: ~/trello</h1>
+        </div>
+    </header>
+
+    <main class="board-container">
+        <div id="board" class="board">
+            <!-- Columns will be injected here by JS -->
+        </div>
+
+        <div class="add-column-wrapper">
+            <button id="add-column-btn" class="add-column-btn">
+                <span style="color: var(--text-green)">+</span> mkdir
+            </button>
+            <div id="add-column-form" class="add-column-form hidden">
+                <input type="text" id="new-column-title" placeholder="dir_name..." autofocus>
+                <div class="form-actions">
+                    <button id="save-column-btn" class="primary-btn">enter</button>
+                    <button id="cancel-column-btn" class="icon-btn">esc</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/script.js?v=3"></script>
+</body>
+
+</html>

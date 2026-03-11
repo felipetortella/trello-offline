@@ -1,0 +1,348 @@
+:root {
+    --bg-outside: #e59952;
+    --bg-color: #28323a;
+    --text-color: #d1d5db;
+    --text-red: #fb7185;
+    --text-green: #34d399;
+    --text-cyan: #67e8f9;
+    --border-color: #1e252c;
+    --text-secondary: #9ca3af;
+    --task-bg: #222b32;
+    --primary-color: #fb7185;
+    --primary-hover: #e11d48;
+    --primary-hover-text: #ffffff;
+    --danger-color: #ef4444;
+    --link-color: #38bdf8;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Fira Code', 'Courier New', Courier, monospace;
+    background: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: auto;
+}
+
+a {
+    color: var(--link-color) !important;
+    text-decoration: underline;
+}
+
+/* Header */
+.app-header {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--bg-color);
+    border-bottom: 1px solid var(--border-color);
+    gap: 0.5rem;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    margin-left: 1rem;
+    color: var(--text-secondary);
+}
+
+.header-logo h1 {
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+/* Board */
+.board-container {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem 2rem;
+    align-items: flex-start;
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.board {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    height: 100%;
+}
+
+/* Columns */
+.column {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    width: 320px;
+    min-width: 320px;
+    max-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+    padding: 2px;
+}
+
+.column.drag-over {
+    background: rgba(57, 255, 20, 0.1);
+    border-style: dashed;
+}
+
+.column-header {
+    padding: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed var(--border-color);
+    background: var(--bg-color);
+}
+
+.column-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--text-color);
+}
+
+.delete-col-btn {
+    background: transparent;
+    border: none;
+    color: var(--danger-color);
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+}
+
+.delete-col-btn:hover {
+    color: white;
+    background: var(--danger-color);
+}
+
+/* Tasks */
+.task-list {
+    padding: 0.75rem;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 40px; 
+}
+
+/* Scrollbar styling */
+.task-list::-webkit-scrollbar {
+    width: 8px;
+}
+.task-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.task-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+.task-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.task {
+    background: var(--task-bg);
+    color: var(--text-color);
+    padding: 0.75rem;
+    cursor: grab;
+    position: relative;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.task:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+.task:active {
+    cursor: grabbing;
+}
+
+.task.dragging {
+    opacity: 0.5;
+    background: var(--border-color);
+}
+
+.task-content {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+.task-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    opacity: 0;
+}
+
+.task:hover .task-actions {
+    opacity: 1;
+}
+
+.task-action-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 0.8rem;
+}
+
+.task-action-btn:hover {
+    color: var(--text-color);
+}
+
+.task-action-btn.delete {
+    color: var(--text-secondary);
+}
+
+.task-action-btn.delete:hover {
+    color: var(--danger-color);
+}
+
+/* Add Task / Add Column Form */
+.add-task-wrapper {
+    padding: 0.5rem;
+}
+
+.add-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    width: 100%;
+    text-align: left;
+    padding: 0.5rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: inherit;
+}
+
+.add-btn:hover {
+    color: var(--text-color);
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+}
+
+.add-column-wrapper {
+    min-width: 320px;
+}
+
+.add-column-btn {
+    background: transparent;
+    border: 1px dashed rgba(255,255,255,0.1);
+    color: var(--text-secondary);
+    width: 100%;
+    text-align: left;
+    padding: 0.85rem 1.25rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-family: inherit;
+    border-radius: 4px;
+}
+
+.add-column-btn:hover {
+    background: rgba(255,255,255,0.05);
+    color: var(--text-color);
+}
+
+.compose-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.compose-textarea {
+    width: 100%;
+    background: var(--task-bg);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    resize: none;
+    outline: none;
+}
+
+.compose-textarea:focus {
+    border-color: var(--text-secondary);
+}
+
+.add-column-form {
+    background: var(--bg-color);
+    padding: 0.5rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+
+.add-column-form input {
+    width: 100%;
+    background: var(--task-bg);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    outline: none;
+}
+
+.add-column-form input:focus {
+    border-color: var(--text-secondary);
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.primary-btn {
+    background: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.primary-btn:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.icon-btn {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid transparent;
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    font-family: inherit;
+    border-radius: 4px;
+}
+
+.icon-btn:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text-color);
+}
+
+.hidden {
+    display: none !important;
+}
