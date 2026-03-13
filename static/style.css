@@ -86,6 +86,12 @@ a {
     display: flex;
     flex-direction: column;
     padding: 2px;
+    cursor: grab;
+}
+
+.column.dragging-col {
+    opacity: 0.5;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .column.drag-over {

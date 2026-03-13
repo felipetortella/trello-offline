@@ -75,6 +75,37 @@ class TrelloHandler(SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(new_task).encode())
             return
             
+        elif parsed.path == "/api/columns/move":
+            col_id = req.get("column_id")
+            new_index = req.get("new_index")
+            
+            col_to_move = None
+            cols = data.get("columns", [])
+            for i, col in enumerate(cols):
+                if col["id"] == col_id:
+                    col_to_move = cols.pop(i)
+                    break
+            
+            if not col_to_move:
+                self.send_response(404)
+                self.end_headers()
+                self.wfile.write(b'{"error": "Column not found"}')
+                return
+                
+            if new_index is not None and 0 <= new_index <= len(cols):
+                cols.insert(new_index, col_to_move)
+            else:
+                cols.append(col_to_move)
+                
+            data["columns"] = cols
+            save_data(data)
+            
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(b'{"success": true}')
+            return
+            
         elif parsed.path == "/api/tasks/move":
             source_col_id = req.get("source_column_id")
             target_col_id = req.get("target_column_id")

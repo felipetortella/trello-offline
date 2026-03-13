@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cancelColumnBtn = document.getElementById("cancel-column-btn");
 
     let draggedTask = null;
+    let draggedColumn = null;
 
     // Fetch and render board
     async function loadBoard() {
@@ -30,6 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const colDiv = document.createElement("div");
         colDiv.className = "column";
         colDiv.dataset.id = column.id;
+        colDiv.draggable = true;
+        colDiv.addEventListener("dragstart", handleColumnDragStart);
+        colDiv.addEventListener("dragend", handleColumnDragEnd);
 
         colDiv.innerHTML = `
             <div class="column-header">
@@ -280,6 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- Drag and Drop Logic ---
 
     function handleDragStart(e) {
+        e.stopPropagation(); // Prevent column from being dragged when dragging a task
         draggedTask = this;
         setTimeout(() => this.classList.add("dragging"), 0);
         e.dataTransfer.effectAllowed = "move";
@@ -293,11 +298,25 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll('.column.drag-over').forEach(col => col.classList.remove('drag-over'));
     }
 
+    function handleColumnDragStart(e) {
+        if (e.target.classList.contains("task")) return;
+        draggedColumn = this;
+        setTimeout(() => this.classList.add("dragging-col"), 0);
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", this.dataset.id);
+    }
+
+    function handleColumnDragEnd(e) {
+        this.classList.remove("dragging-col");
+        draggedColumn = null;
+    }
+
     function setupDragAndDrop() {
         const taskLists = document.querySelectorAll(".task-list");
 
         taskLists.forEach(list => {
             list.addEventListener("dragover", e => {
+                if (!draggedTask) return;
                 e.preventDefault();
                 e.dataTransfer.dropEffect = "move";
                 list.closest('.column').classList.add('drag-over');
@@ -311,6 +330,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             list.addEventListener("dragleave", e => {
+                if (!draggedTask) return;
                 // Remove visual cue if leaving the list entirely
                 if (!list.contains(e.relatedTarget)) {
                     list.closest('.column').classList.remove('drag-over');
@@ -368,6 +388,58 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
+
+    // Helper for sorting columns during drag
+    function getDragAfterColumnElement(container, x) {
+        const draggableElements = [...container.querySelectorAll(".column:not(.dragging-col)")];
+
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = x - box.left - box.width / 2;
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    // Board drag and drop listeners (once per page load)
+    boardEl.addEventListener("dragover", e => {
+        if (!draggedColumn) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        
+        const afterElement = getDragAfterColumnElement(boardEl, e.clientX);
+        if (afterElement == null) {
+            boardEl.appendChild(draggedColumn);
+        } else {
+            boardEl.insertBefore(draggedColumn, afterElement);
+        }
+    });
+
+    boardEl.addEventListener("drop", async e => {
+        if (!draggedColumn) return;
+        e.preventDefault();
+        
+        const colId = draggedColumn.dataset.id;
+        const colsInBoard = [...boardEl.querySelectorAll(".column")];
+        const newIndex = colsInBoard.indexOf(draggedColumn);
+        
+        try {
+            await fetch("/api/columns/move", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    column_id: colId,
+                    new_index: newIndex
+                })
+            });
+        } catch (err) {
+            console.error("Failed to move column", err);
+            loadBoard(); // rollback validation
+        }
+    });
 
     // Helper to escape HTML and prevent XSS
     function escapeHTML(str) {
