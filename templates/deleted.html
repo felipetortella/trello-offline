@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deleted Tasks - Trello Offline</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css?v=3">
+    <style>
+        .deleted-page-container {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .search-container {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .search-input {
+            flex: 1;
+            background: var(--task-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.75rem;
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+        }
+        .search-input:focus {
+            border-color: var(--text-cyan);
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-logo">
+            <h1>trello@offline: ~/trello/deleted_data</h1>
+        </div>
+        <div class="header-actions">
+            <a href="/" class="header-btn" style="text-decoration: none;">cd ..</a>
+        </div>
+    </header>
+
+    <main class="deleted-page-container">
+        <h2>cat deleted_data.json | grep</h2>
+        <div class="search-container">
+            <span style="color: var(--text-green); font-size: 1.2rem; display: flex; align-items: center;">$</span>
+            <input type="text" id="search-input" class="search-input" placeholder="search content..." autofocus>
+        </div>
+        
+        <div id="deleted-tasks-list" class="deleted-list" style="padding: 0; max-height: calc(100vh - 250px);">
+            <!-- Tasks will be injected here -->
+        </div>
+    </main>
+
+    <script src="/static/deleted.js?v=1"></script>
+</body>
+</html>

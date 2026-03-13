@@ -39,6 +39,7 @@ a {
 /* Header */
 .app-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     padding: 0.75rem 1rem;
     background: var(--bg-color);
@@ -56,6 +57,126 @@ a {
 .header-logo h1 {
     font-size: 0.9rem;
     font-weight: 400;
+}
+
+.header-actions {
+    display: flex;
+    margin-right: 1rem;
+}
+
+.header-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.header-btn:hover {
+    color: var(--text-color);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal.hidden {
+    display: none !important;
+}
+
+.modal-content {
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.modal-header h2 {
+    font-size: 1rem;
+    color: var(--text-cyan);
+    font-weight: 700;
+    margin: 0;
+}
+
+.close-btn {
+    font-weight: bold;
+    color: var(--text-red);
+}
+
+.close-btn:hover {
+    color: var(--danger-color);
+}
+
+.deleted-list {
+    padding: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.deleted-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.deleted-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.deleted-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.deleted-task-item {
+    background: var(--task-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.deleted-task-date {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.25rem;
+}
+
+.deleted-task-content {
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--text-secondary);
 }
 
 /* Board */

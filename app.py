@@ -1,10 +1,12 @@
 import os
 import json
 import uuid
+from datetime import datetime
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse
 
 DATA_FILE = "data.json"
+DELETED_DATA_FILE = "deleted_data.json"
 PORT = 5000
 
 def load_data():
@@ -20,17 +22,44 @@ def save_data(data):
     with open(DATA_FILE, "w") as f:
         json.dump(data, f, indent=4)
 
+def load_deleted_data():
+    if not os.path.exists(DELETED_DATA_FILE):
+        return []
+    with open(DELETED_DATA_FILE, "r") as f:
+        try:
+            return json.load(f)
+        except json.JSONDecodeError:
+            return []
+
+def save_deleted_data(data):
+    with open(DELETED_DATA_FILE, "w") as f:
+        json.dump(data, f, indent=4)
+
 class TrelloHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         parsed = urlparse(self.path)
         if parsed.path == "/":
             self.path = "/templates/index.html"
+        elif parsed.path == "/deleted":
+            self.path = "/templates/deleted.html"
         
         if parsed.path == "/api/board":
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps(load_data()).encode())
+            return
+            
+        if parsed.path == "/api/deleted_tasks":
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            
+            deleted_tasks = load_deleted_data()
+            # Sort by deleted_at descending
+            deleted_tasks.sort(key=lambda x: x.get("deleted_at", ""), reverse=True)
+            
+            self.wfile.write(json.dumps(deleted_tasks).encode())
             return
             
         return super().do_GET()
@@ -167,10 +196,21 @@ class TrelloHandler(SimpleHTTPRequestHandler):
             col_id = parts[2]
             task_id = parts[4]
             
+            task_to_delete = None
             for col in data.get("columns", []):
                 if col["id"] == col_id:
+                    for t in col.get("tasks", []):
+                        if t["id"] == task_id:
+                            task_to_delete = t
+                            break
                     col["tasks"] = [t for t in col.get("tasks", []) if t["id"] != task_id]
                     break
+            
+            if task_to_delete:
+                deleted_data = load_deleted_data()
+                task_to_delete["deleted_at"] = datetime.now().isoformat()
+                deleted_data.append(task_to_delete)
+                save_deleted_data(deleted_data)
             
             save_data(data)
             self.send_response(200)
